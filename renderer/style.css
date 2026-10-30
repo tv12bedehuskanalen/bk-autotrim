@@ -156,3 +156,54 @@ select:focus-visible {
 [hidden] {
   display: none !important;
 }
+
+main {
+  padding-bottom: 200px;
+}
+header {
+  padding: 16px 24px;
+}
+section {
+  padding: 16px;
+}
+#statusPanel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  border-radius: 0;
+  padding: 12px 24px;
+  z-index: 2;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 -5px 24px #0006;
+}
+#statusPanel p {
+  margin: 6px 0;
+}
+#statusPanel progress {
+  margin-top: 8px;
+}
+#queue {
+  margin: 6px 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+dialog {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: min(1000px, 95vw);
+  max-height: 95vh;
+}
+dialog::backdrop {
+  background: #000b;
+}
+dialog video {
+  max-height: 65vh;
+}
+dialog button {
+  margin-top: 12px;
+}

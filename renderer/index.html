@@ -77,7 +77,11 @@
           </div>
         </div>
         <p id="duration"></p>
-        <video id="player" controls hidden></video>
+        <dialog id="previewDialog">
+          <p id="playbackCut"></p>
+          <video id="player" controls></video
+          ><button id="closePreview">Lukk forhåndsvisning</button>
+        </dialog>
       </section>
       <section>
         <h2>Eksport</h2>
@@ -102,7 +106,7 @@
           ><button id="recover">Kopier bevart eksport …</button>
         </div>
       </section>
-      <section aria-live="polite">
+      <section id="statusPanel" aria-live="polite">
         <strong id="status">Klar</strong
         ><progress id="progress" max="1" value="0"></progress>
         <p id="detail"></p>

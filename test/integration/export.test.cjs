@@ -226,3 +226,29 @@ test(
     assert.deepEqual(markers, [1, 3]);
   },
 );
+
+test("reject opaque and invisible PNG overlays before export", async (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "bk-alpha-"));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  for (const [name, opacity] of [
+    ["opaque", 1],
+    ["invisible", 0],
+  ]) {
+    const file = path.join(directory, name + ".png");
+    await media.run("ffmpeg", [
+      "-v",
+      "error",
+      "-f",
+      "lavfi",
+      "-i",
+      `color=white@${opacity}:size=32x18,format=rgba`,
+      "-frames:v",
+      "1",
+      file,
+    ]);
+    await assert.rejects(
+      media.validateLogo(file),
+      name === "opaque" ? /heldekkende/ : /gjennomsiktig/,
+    );
+  }
+});

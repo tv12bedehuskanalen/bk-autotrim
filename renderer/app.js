@@ -53,7 +53,8 @@ $("add").onclick = () =>
     const file = await bk.pick("video");
     if (!file) return;
     source = null;
-    $("file").textContent = file;
+    $("file").textContent = file.split(/[\\/]/).at(-1);
+    $("file").title = file;
     source = await bk.analyse(file);
     cutConfirmed = source.markers.length === 1;
     $("start").value = source.start;
@@ -118,10 +119,15 @@ for (const which of ["in", "out"]) {
     action(async () => {
       if (!source) return;
       $("status").textContent = "Lager avspillbar forhåndsvisning";
-      const clip = await bk.playback(source.file, cut(which));
+      const clip = await bk.playback(
+        source.file,
+        Number($(which === "in" ? "start" : "end").value),
+      );
       $("player").src = clip.url;
-      $("player").hidden = false;
-      $("player").currentTime = clip.offset;
+      $("playbackCut").textContent =
+        `Klippunkt ved ${clip.offset.toFixed(3)} s i denne forhåndsvisningen`;
+      $("previewDialog").showModal();
+      $("player").currentTime = 0;
       await $("player").play();
     });
   for (const delta of [-1, 1])
@@ -209,3 +215,9 @@ bk.defaults().then((defaults) => {
   logo = defaults.logo;
   $("logoPath").textContent = "bk-logo.png · 1920 × 1080 · original plassering";
 });
+
+$("closePreview").onclick = () => {
+  $("player").pause();
+  $("previewDialog").close();
+};
+$("previewDialog").oncancel = () => $("player").pause();

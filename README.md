@@ -29,4 +29,4 @@ Mac og Windows x64-installasjoner bygges på native GitHub-runnere. Manuell work
 
 ## Verifiseringsstatus
 
-Dette er en utviklingsversjon. Se utgivelsesrutinen for kontroller som må utføres på målmaskiner før produksjon. Automatisk installasjon av oppdateringer, er ikke implementert. Appen laster ned og tilbyr å åpne riktig offentlig installasjon ved oppdatering. Et helt program og målplattformene iTX/Vimeo OTT må fortsatt valideres av operatør.
+Dette er en utviklingsversjon. Se utgivelsesrutinen for kontroller som må utføres på målmaskiner før produksjon. Automatisk installasjon av oppdateringer er ikke implementert. Appen laster ned og tilbyr å åpne riktig offentlig installasjon ved oppdatering. Et helt program og målplattformene iTX/Vimeo OTT må fortsatt valideres av operatør.

@@ -7,7 +7,8 @@ Kildekode og installasjoner ligger i samme offentlige repository. Oppdateringer 
 1. Installer Node.js 22+, Git, C/C++-verktøy, Make, NASM og pkg-config. Windows-bygget bruker MSYS2/MINGW64. Se workflowen for pakkelisten.
 2. Kjør `npm ci`, `npm run build:media`, `node scripts/verify-media.cjs`, `npm run check`, `npm test`, `npm run test:media`.
 3. Kjør `npm run dist:mac` eller `npm run dist:win` på riktig plattform. Bygg hver arkitektur på en tilsvarende maskin; ikke gjenbruk medieverktøy fra en annen arkitektur.
-4. Kontroller installerens filnavn med `node scripts/verify-artifact.cjs darwin arm64` eller den aktuelle plattformen/arkitekturen.
+4. Kontroller de pakkede verktøyene med `node scripts/verify-packaged.cjs darwin arm64` (eller aktuell plattform/arkitektur). Denne sjekken kjører dem med tom PATH, slik at en lokalt installert FFmpeg ikke kan skjule mangler.
+5. Kontroller installerens filnavn med `node scripts/verify-artifact.cjs darwin arm64` eller den aktuelle plattformen/arkitekturen.
 
 Workflowen «Build installers» kan startes manuelt for å lage nedlastbare testinstallasjoner uten offentlig utgivelse. Den bygger Apple Silicon, Intel Mac og Windows x64. Alle bygg må lykkes før en tag-utgivelse publiseres.
 
@@ -23,3 +24,5 @@ For en utgivelse: oppdater package.json og låsefilen, commit, og push en tag li
 - Test full NAS-kopiering, plassmangel og avbrudd.
 
 Automatiske eksporttester er teknisk validering, ikke redaksjonell godkjenning eller iTX/Vimeo-sertifisering. Installerne er foreløpig usignerte; Apple Developer-notarisering og Windows-signering krever organisasjonens sertifikater før ordinær distribusjon. Ikke legg private sertifikater eller passord i repoet.
+
+Støttede installerplattformer: macOS 13 eller nyere (Intel/Apple Silicon) og Windows x64. Windows ARM64 er ikke bygget; bruk x64-utgaven der operativsystemet støtter dette.

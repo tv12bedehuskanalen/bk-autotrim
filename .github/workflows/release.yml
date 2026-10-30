@@ -32,9 +32,14 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
-      - if: runner.os == 'macOS'
+      - uses: actions/cache@v4
+        id: media
+        with:
+          path: vendor
+          key: media-v1-${{ matrix.os }}-${{ matrix.arch }}-${{ hashFiles('scripts/build-media.sh') }}
+      - if: runner.os == 'macOS' && steps.media.outputs.cache-hit != 'true'
         run: brew install nasm pkg-config
-      - if: runner.os == 'Windows'
+      - if: runner.os == 'Windows' && steps.media.outputs.cache-hit != 'true'
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -43,16 +48,17 @@ jobs:
             base-devel git curl tar nasm
             mingw-w64-x86_64-gcc mingw-w64-x86_64-pkgconf
             mingw-w64-x86_64-ffnvcodec-headers mingw-w64-x86_64-zlib
-      - if: runner.os == 'Windows'
+      - if: runner.os == 'Windows' && steps.media.outputs.cache-hit != 'true'
         shell: msys2 {0}
         run: bash scripts/build-media.sh
-      - if: runner.os == 'macOS'
+      - if: runner.os == 'macOS' && steps.media.outputs.cache-hit != 'true'
         run: bash scripts/build-media.sh
       - run: node scripts/verify-media.cjs
       - run: npm run test:media
       - run: npx electron-builder --publish never --${{ matrix.arch }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - run: node scripts/verify-packaged.cjs ${{ matrix.platform }} ${{ matrix.arch }}
       - run: node scripts/verify-artifact.cjs ${{ matrix.platform }} ${{ matrix.arch }}
       - uses: actions/upload-artifact@v4
         with:

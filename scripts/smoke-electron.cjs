@@ -21,6 +21,26 @@ app.whenReady().then(async () => {
       )
         throw Error("Ufullstendig grensesnitt");
       if (errors.length) throw Error(errors.join("\n"));
+      if (process.env.BK_SMOKE_SOURCE) {
+        const info = await require("../lib/media.cjs").probe(
+          process.env.BK_SMOKE_SOURCE,
+        );
+        await window.webContents.executeJavaScript(`(async()=>{
+          source=${JSON.stringify(info)};
+          $('file').textContent=source.file;
+          $('start').value=58.2; $('end').value=source.duration-1;
+          $('name').value='TV12 Magasinet';
+          $('marker').textContent='Grønnmarkør: 48.200 s';
+          await preview('in'); await preview('out'); duration(); outputs();
+          await $('inNext').onclick();
+          if(Math.abs(Number($('start').value)-58.22)>.000001)throw Error('Frame stepping failed');
+          await $('inBack').onclick();
+          await $('inPlay').onclick();
+          if($('error').textContent)throw Error($('error').textContent);
+          $('player').pause();
+          if(!$('player').videoWidth)throw Error('Playback failed');
+        })()`);
+      }
       const screenshot = path.join(os.tmpdir(), "bk-autotrim-window.png");
       fs.writeFileSync(
         screenshot,
