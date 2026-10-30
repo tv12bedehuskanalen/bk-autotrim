@@ -36,6 +36,14 @@ test(
       "2",
       "-c:a",
       "pcm_s24le",
+      "-color_primaries",
+      "bt709",
+      "-color_trc",
+      "bt709",
+      "-colorspace",
+      "bt709",
+      "-color_range",
+      "tv",
       source,
     ]);
     await media.validateLogo(path.join(__dirname, "../../assets/bk-logo.png"));
@@ -61,6 +69,10 @@ test(
       );
       const meta = await media.probe(file);
       assert.equal(meta.fps, 50);
+      assert.equal(meta.video.color_primaries, "bt709");
+      assert.equal(meta.video.color_transfer, "bt709");
+      assert.equal(meta.video.color_space, "bt709");
+      assert.equal(meta.video.color_range, "tv");
       assert.equal(meta.video.width, 1920);
       assert.equal(meta.video.height, 1080);
       assert.equal(meta.video.pix_fmt, branded ? "yuv420p" : "yuv422p10le");
