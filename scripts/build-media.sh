@@ -43,11 +43,14 @@ if [[ "${MSYSTEM:-}" == MINGW64 ]]; then
   mkdir -p "$WORK/ffnvcodec-headers"
   cp -R /mingw64/include/ffnvcodec "$WORK/ffnvcodec-headers/"
   cp /mingw64/lib/pkgconfig/ffnvcodec.pc "$WORK/ffnvcodec-headers/"
+  ZLIB_VERSION="$(pacman -Q mingw-w64-x86_64-zlib | awk '{print $2}')"
+  printf '%s\n' "$ZLIB_VERSION" > "$ROOT/vendor/licenses/zlib-package-version.txt"
+  curl --fail --location --retry 3 "https://repo.msys2.org/mingw/sources/mingw-w64-zlib-$ZLIB_VERSION.src.tar.zst" -o "$WORK/zlib-source-package.tar.zst"
   cp /mingw64/share/licenses/zlib/LICENSE "$ROOT/vendor/licenses/zlib-LICENSE"
 fi
 cp "$WORK/x264/COPYING" "$ROOT/vendor/licenses/x264-COPYING"
 cp "$ROOT/scripts/build-media.sh" "$ROOT/vendor/licenses/build-media.sh"
 # Keep corresponding source next to each installer in releases.
-tar -czf "$ROOT/vendor/media-sources.tar.gz" -C "$WORK" --exclude='*.o' --exclude='*.a' --exclude='ffmpeg/ffmpeg' --exclude='ffmpeg/ffprobe' x264 ffmpeg ${MSYSTEM:+ffnvcodec-headers}
+tar -czf "$ROOT/vendor/media-sources.tar.gz" -C "$WORK" --exclude='*.o' --exclude='*.a' --exclude='ffmpeg/ffmpeg' --exclude='ffmpeg/ffprobe' x264 ffmpeg ${MSYSTEM:+ffnvcodec-headers} ${MSYSTEM:+zlib-source-package.tar.zst}
 "$ROOT/vendor/bin/ffmpeg$SUFFIX" -version
 "$ROOT/vendor/bin/ffprobe$SUFFIX" -version

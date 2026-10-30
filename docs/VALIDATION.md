@@ -12,4 +12,6 @@ Lokalt kontrollert på Apple Silicon:
 
 Programvarereserven er bekreftet når VideoToolbox ikke kan starte i denne økten. Dette dokumenterer ikke maskinvarehastighet på vanlige Mac-/Windows-maskiner.
 
+Hele programmets lyd (3454.200 sekunder) er normalisert og målt uavhengig: −23.00 LUFS, −2.03 dBTP og 4.70 LU LRA. Lineær normalisering ble brukt; kildens målte LRA var også 4.70 LU. Den midlertidige WAV-filen er slettet etter kontroll.
+
 Dette er ikke redaksjonell godkjenning. Hele programmet er ikke eksportert eller kontrollert i iTX/Vimeo OTT. Full NAS-levering og avspilling på målmaskinene må fortsatt kontrolleres av operatør. Installerne er foreløpig usignerte. GitHub-workflowens resultater dokumenterer hvilke native bygg som har bestått; se Actions og den tilhørende utgivelsen.
