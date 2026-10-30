@@ -211,7 +211,7 @@ test(
 );
 
 test(
-  "marker scan returns both 48-frame markers and refines their first frames",
+  "opening marker scan stops at the first marker and refines its first frame",
   { timeout: 60000 },
   async (t) => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), "bk-markers-"));
@@ -231,11 +231,11 @@ test(
       file,
     ]);
     const coarse = await media.detect(file);
-    assert.equal(coarse.length, 2);
+    assert.equal(coarse.length, 1);
     const markers = [];
     for (const candidate of coarse)
       markers.push(await media.refine(file, candidate, 50));
-    assert.deepEqual(markers, [1, 3]);
+    assert.deepEqual(markers, [1]);
   },
 );
 

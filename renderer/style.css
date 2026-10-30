@@ -42,6 +42,10 @@ section {
   padding: 20px;
   margin-bottom: 16px;
 }
+#dropzone.dragover {
+  border: 2px dashed var(--accent);
+  background: var(--surface);
+}
 h2 {
   font-size: 16px;
   margin: 0 0 14px;

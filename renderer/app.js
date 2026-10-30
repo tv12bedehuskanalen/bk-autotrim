@@ -48,9 +48,7 @@ function duration() {
       ? `Varighet: ${seconds.toFixed(3)} s · ${Math.round(seconds * (source?.fps || 50))} bilder. Utpunktet er første bilde som utelates.`
       : "Kontroller klippepunktene.";
 }
-$("add").onclick = () =>
-  action(async () => {
-    const file = await bk.pick("video");
+async function loadInput(file) {
     if (!file) return;
     source = null;
     $("file").textContent = file.split(/[\\/]/).at(-1);
@@ -70,7 +68,7 @@ $("add").onclick = () =>
       source.markers.length > 1
         ? `${source.markers.length} mulige markører. Velg og kontroller innpunkt.`
         : source.marker === null
-          ? "Ingen grønnmarkør. Sett innpunkt manuelt."
+          ? "Ingen grønnmarkør i de første to minuttene. Sett innpunkt manuelt."
           : `Grønnmarkør: ${source.marker.toFixed(3)} s`;
     $("markers").replaceChildren(new Option("Velg markør …", ""));
     for (const marker of source.markers)
@@ -86,7 +84,29 @@ $("add").onclick = () =>
     await preview("out");
     outputs();
     duration();
+}
+$("add").onclick = () => action(async () => loadInput(await bk.pick("video")));
+document.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  if (!busy) $("dropzone").classList.add("dragover");
+  if (event.dataTransfer) event.dataTransfer.dropEffect = busy ? "none" : "copy";
+});
+document.addEventListener("dragleave", (event) => {
+  if (!event.relatedTarget) $("dropzone").classList.remove("dragover");
+});
+document.addEventListener("drop", (event) => {
+  event.preventDefault();
+  $("dropzone").classList.remove("dragover");
+  if (busy) return;
+  const files = [...(event.dataTransfer?.files || [])];
+  action(async () => {
+    if (files.length !== 1) throw Error("Slipp én videofil om gangen.");
+    const file = bk.droppedPath(files[0]);
+    if (!/\.(mov|mp4|mxf|mkv)$/i.test(file))
+      throw Error("Velg en videofil (MOV, MP4, MXF eller MKV).");
+    await loadInput(file);
   });
+});
 $("markers").onchange = () =>
   action(async () => {
     if ($("markers").value === "") return;

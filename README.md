@@ -4,7 +4,7 @@ Desktop-app for å klippe programopptak og lage MOV med og uten BK-logo, med nor
 
 ## Bruk
 
-Velg opptak og la appen søke gjennom opptaket etter nesten heldekkende grønnmarkører. Innpunktet settes ti sekunder etter første grønne bilde når én markør finnes. Flere treff må velges og kontrolleres. Uten treff settes klippet manuelt. Utpunktet er ett sekund før filslutt, eksklusivt: forhåndsvisningen viser siste bilde som blir med.
+Slipp opptaket inn i appen, eller bruk «Velg opptak». Appen søker bare i de første to minuttene og stopper ved første bekreftede grønnmarkør. Innpunktet settes ti sekunder etter første grønne bilde. Uten treff settes klippet manuelt. Utpunktet er ett sekund før filslutt, eksklusivt: forhåndsvisningen viser siste bilde som blir med.
 
 Kontroller bildene, spill av rundt klippepunktene og juster ett bilde om gangen. Velg målmappe, filnavn og eksport med logo, uten logo eller begge. Logoeksporten kjøres først. Den medfølgende `bk-logo.png` er en transparent 1920×1080-overlay som legges i original størrelse ved 0,0. Den skaleres eller flyttes ikke. Andre videoformater krever en overlay med nøyaktig samme bildeflate.
 

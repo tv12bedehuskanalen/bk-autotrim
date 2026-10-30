@@ -21,6 +21,33 @@ app.whenReady().then(async () => {
       )
         throw Error("Ufullstendig grensesnitt");
       if (errors.length) throw Error(errors.join("\n"));
+      if (process.env.BK_SMOKE_DROP) {
+        window.webContents.debugger.attach("1.3");
+        const data = {
+          items: [], files: [process.env.BK_SMOKE_DROP], dragOperationsMask: 1,
+        };
+        for (const type of ["dragEnter", "dragOver", "drop"])
+          await window.webContents.debugger.sendCommand("Input.dispatchDragEvent", {
+            type, x: 200, y: 170, data,
+          });
+        const deadline = Date.now() + 60000;
+        let loaded = false;
+        while (Date.now() < deadline) {
+          const result = await window.webContents.executeJavaScript(
+            "({loaded:!!source&&!busy,error:$('error').textContent,marker:source?.marker})",
+          );
+          if (result.error) throw Error(result.error);
+          if (result.loaded) {
+            if (result.marker !== 1) throw Error("Unexpected dropped-file marker");
+            loaded = true;
+            break;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        window.webContents.debugger.detach();
+        if (!loaded) throw Error("Dropped video did not load");
+        console.log("Native file drag and drop passed");
+      }
       if (process.env.BK_SMOKE_SOURCE) {
         const info = await require("../lib/media.cjs").probe(
           process.env.BK_SMOKE_SOURCE,

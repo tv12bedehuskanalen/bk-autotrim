@@ -66,20 +66,29 @@ ipcMain.handle("analyse", async (_, file) => {
   controller = new AbortController();
   try {
     const info = await media.probe(file);
-    event({ stage: "Søker etter grønnmarkør" });
+    event({ stage: "Søker etter åpningsmarkør · Kun de første to minuttene" });
     if (
       !Number.isFinite(info.fps) ||
       info.fps <= 0 ||
       !Number.isFinite(info.duration)
     )
       throw Error("Kunne ikke lese opptakets varighet eller bildefrekvens.");
+    const found = [];
+    const scanStage = () =>
+      found.length
+        ? `Grønnmarkør funnet ved ${found[0].toFixed(3)} s · Kontrollerer nøyaktig innpunkt`
+        : "Søker etter åpningsmarkør · Kun de første to minuttene";
     const candidates = await media.detect(file, {
       signal: controller.signal,
+      onCandidate: (seconds) => {
+        found.push(seconds);
+        event({ stage: scanStage(), seconds, fraction: seconds / Math.min(120, info.duration) });
+      },
       onProgress: (seconds) =>
         event({
-          stage: "Søker etter grønnmarkør",
+          stage: scanStage(),
           seconds,
-          fraction: seconds / info.duration,
+          fraction: seconds / Math.min(120, info.duration),
         }),
     });
     const markers = [];

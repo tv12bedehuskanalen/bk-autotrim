@@ -7,7 +7,8 @@ Lokalt kontrollert på Apple Silicon:
 - Appvinduet åpnes med BK-design. Ett-bildes justering og avspillbar forhåndsvisning er testet mot det virkelige opptaket via appens egne knapper.
 - Den pakkede appen er startet og har eksportert begge varianter med sin egen eksterne PNG-ressurs. Pakket FFmpeg og FFprobe starter med tom PATH, og den pakkede PNG-logoen er identisk med originalfilen. PNG-dekoding og alfakanal fungerer i pakken.
 - Den virkelige logoen er 1920×1080 med synlig grafikk og transparent bakgrunn. Overlay legges ved 0,0 uten skalering.
-- Søk gjennom hele det virkelige opptaket fant nøyaktig én kvalifisert markør, med første grønne bilde ved 48.200 s etter finjustering. Klippeforslag: inn 58.200 s, eksklusivt ut 3512.400 s, varighet 3454.200 s. Stillbildene viser programleder ved innpunktet og sluttplakat ved siste bilde.
+- Det opprinnelige fullsøket fant én markør ved 48.200 s. Søket er nå begrenset til de første 120 sekundene og stopper straks første markør er bekreftet. Ny kontroll på samme opptak fant og finjusterte 48.200 s på 30 sekunder under samtidig testing. Klippeforslag: inn 58.200 s, eksklusivt ut 3512.400 s, varighet 3454.200 s. Stillbildene viser programleder ved innpunktet og sluttplakat ved siste bilde.
+- Native dra-og-slipp av en videofil er kontrollert i Electron: filbanen overføres via webUtils, åpningsmarkøren finnes og klippevisningen lastes. Flere filer og ukjente filtyper avvises.
 - Fem sekunders eksport fra dette opptaket lyktes med begge varianter, 250 bilder, 1920×1080 / 50 fps, PCM 24-bit / 48 kHz stereo. Branded er yuv420p, uten logo er yuv422p10le. En separat kontroll etter korrigert lydtrimming målte −23.00 LUFS og −9.50 dBTP på femsekundersklippet.
 
 Programvarereserven er bekreftet når VideoToolbox ikke kan starte i denne økten. Dette dokumenterer ikke maskinvarehastighet på vanlige Mac-/Windows-maskiner.
