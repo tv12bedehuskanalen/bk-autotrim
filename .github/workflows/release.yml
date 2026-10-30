@@ -67,7 +67,7 @@ jobs:
       - run: node scripts/verify-packaged.cjs ${{ matrix.platform }} ${{ matrix.arch }}
       - run: node scripts/smoke-packaged.cjs ${{ matrix.platform }} ${{ matrix.arch }}
       - run: node scripts/verify-artifact.cjs ${{ matrix.platform }} ${{ matrix.arch }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: BK-Autotrim-${{ matrix.platform }}-${{ matrix.arch }}
           if-no-files-found: error
