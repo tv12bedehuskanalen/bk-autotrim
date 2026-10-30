@@ -20,13 +20,14 @@ const packaged = JSON.parse(
 );
 if (packaged.version !== require("../package.json").version)
   throw Error("Feil appversjon i installasjonen.");
-const logo = asar.extractFile(archive, "assets/bk-logo.png");
+const logo = fs.readFileSync(path.join(resources, "branding", "bk-logo.png"));
 if (!logo.equals(fs.readFileSync("assets/bk-logo.png")))
   throw Error("Logoen er endret i installasjonen.");
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "bk-packaged-"));
 try {
-  const input = path.join(temporary, "logo.png");
-  fs.writeFileSync(input, logo);
+  const input = path.resolve(resources, "branding", "bk-logo.png");
+  if (!fs.readFileSync(input).equals(logo))
+    throw Error("Ekstern FFmpeg-logo mangler eller er endret.");
   for (const tool of ["ffmpeg", "ffprobe"]) {
     const binary = path.resolve(
       resources,

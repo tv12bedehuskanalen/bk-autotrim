@@ -8,9 +8,10 @@ Kildekode og installasjoner ligger i samme offentlige repository. Oppdateringer 
 2. Kjør `npm ci`, `npm run build:media`, `node scripts/verify-media.cjs`, `npm run check`, `npm test`, `npm run test:media`.
 3. Kjør `npm run dist:mac` eller `npm run dist:win` på riktig plattform. Bygg hver arkitektur på en tilsvarende maskin; ikke gjenbruk medieverktøy fra en annen arkitektur.
 4. Kontroller de pakkede verktøyene med `node scripts/verify-packaged.cjs darwin arm64` (eller aktuell plattform/arkitektur). Denne sjekken kjører dem med tom PATH, slik at en lokalt installert FFmpeg ikke kan skjule mangler.
-5. Kontroller installerens filnavn med `node scripts/verify-artifact.cjs darwin arm64` eller den aktuelle plattformen/arkitekturen.
+5. Start den pakkede appens eksporttest med `node scripts/smoke-packaged.cjs darwin arm64` (eller aktuell plattform/arkitektur).
+6. Kontroller installerens filnavn med `node scripts/verify-artifact.cjs darwin arm64` eller den aktuelle plattformen/arkitekturen.
 
-Workflowen «Build installers» kan startes manuelt for å lage nedlastbare testinstallasjoner uten offentlig utgivelse. Den bygger Apple Silicon, Intel Mac og Windows x64. Alle bygg må lykkes før en tag-utgivelse publiseres.
+Workflowen «Build installers» kjører på main og kan startes manuelt for å lage nedlastbare testinstallasjoner uten offentlig utgivelse. Den bygger Apple Silicon, Intel Mac og Windows x64. Alle bygg må lykkes før en tag-utgivelse publiseres.
 
 For en utgivelse: oppdater package.json og låsefilen, commit, og push en tag lik `v` + versjonen. Versjonen kontrolleres før bygging. Installatører og mediekilder publiseres først etter at alle plattformer har bestått testene. Oppdateringsklienten krever stabile vX.Y.Z-tagger.
 

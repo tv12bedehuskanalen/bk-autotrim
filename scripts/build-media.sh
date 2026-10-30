@@ -3,6 +3,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="${BK_MEDIA_WORK:-$ROOT/.media-build}"
 PREFIX="$WORK/install"
+# Source archives must not inherit the enclosing application Git version.
+export GIT_CEILING_DIRECTORIES="$WORK"
 mkdir -p "$WORK" "$PREFIX" "$ROOT/vendor/bin" "$ROOT/vendor/licenses"
 fetch_source() {
   local name="$1" url="$2"
@@ -17,10 +19,12 @@ fetch_source ffmpeg https://github.com/FFmpeg/FFmpeg/archive/refs/tags/n7.1.2.ta
 JOBS="${BK_BUILD_JOBS:-4}"
 if [[ "$(uname -s)" == Darwin ]]; then export MACOSX_DEPLOYMENT_TARGET=13.0; fi
 cd "$WORK/x264"
+if [ -f config.mak ]; then make distclean; fi
 ./configure --prefix="$PREFIX" --enable-static --disable-cli --enable-pic --disable-opencl
 make -j"$JOBS"
 make install
 cd "$WORK/ffmpeg"
+if [ -f ffbuild/config.mak ]; then make distclean; fi
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 OPTIONS=(--prefix="$PREFIX" --pkg-config-flags=--static --extra-cflags="-I$PREFIX/include" --extra-ldflags="-L$PREFIX/lib" --enable-gpl --enable-libx264 --enable-zlib --disable-autodetect --disable-doc --disable-debug --disable-network --disable-shared --enable-static --disable-ffplay)
 if [[ "$(uname -s)" == Darwin ]]; then OPTIONS+=(--enable-videotoolbox); fi
@@ -29,7 +33,10 @@ if [[ "${MSYSTEM:-}" == MINGW64 ]]; then OPTIONS+=(--target-os=mingw32 --extra-l
 ./configure "${OPTIONS[@]}"
 make -j"$JOBS"
 SUFFIX=""; if [[ "${MSYSTEM:-}" == MINGW64 ]]; then SUFFIX=.exe; fi
-cp "ffmpeg$SUFFIX" "ffprobe$SUFFIX" "$ROOT/vendor/bin/"
+for TOOL in ffmpeg ffprobe; do
+  cp "$TOOL$SUFFIX" "$ROOT/vendor/bin/$TOOL$SUFFIX.new"
+  mv -f "$ROOT/vendor/bin/$TOOL$SUFFIX.new" "$ROOT/vendor/bin/$TOOL$SUFFIX"
+done
 cp COPYING.GPLv2 COPYING.GPLv3 LICENSE.md "$ROOT/vendor/licenses/"
 if [[ "${MSYSTEM:-}" == MINGW64 ]]; then
   cp /mingw64/share/licenses/ffnvcodec-headers/LICENSE "$ROOT/vendor/licenses/ffnvcodec-LICENSE"

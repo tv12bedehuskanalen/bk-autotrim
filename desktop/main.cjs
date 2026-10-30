@@ -13,8 +13,15 @@ const previews = [];
 function event(data) {
   win?.webContents.send("progress", data);
 }
-app.whenReady().then(() => {
+const smoke = process.argv.includes("--bk-smoke-test");
+function defaultLogo() {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, "branding", "bk-logo.png")
+    : path.join(__dirname, "../assets/bk-logo.png");
+}
+app.whenReady().then(async () => {
   win = new BrowserWindow({
+    show: !smoke,
     width: 1100,
     height: 850,
     minWidth: 850,
@@ -26,8 +33,17 @@ app.whenReady().then(() => {
       nodeIntegration: false,
     },
   });
-  win.loadFile(path.join(__dirname, "../renderer/index.html"));
+  await win.loadFile(path.join(__dirname, "../renderer/index.html"));
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  if (smoke) {
+    try {
+      await require("./smoke.cjs").check({ app, win, media });
+      app.quit();
+    } catch (error) {
+      console.error(error);
+      app.exit(1);
+    }
+  }
 });
 app.on("window-all-closed", () => app.quit());
 ipcMain.handle("pick", async (_, kind) => {
@@ -278,5 +294,5 @@ app.on("before-quit", () => {
 });
 
 ipcMain.handle("defaults", () => ({
-  logo: path.join(__dirname, "../assets/bk-logo.png"),
+  logo: defaultLogo(),
 }));

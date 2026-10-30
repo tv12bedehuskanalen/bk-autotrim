@@ -4,6 +4,8 @@ for (const tool of ["ffmpeg", "ffprobe"]) {
   const version = execFileSync(binary(tool), ["-version"], {
     encoding: "utf8",
   });
+  if (!version.split("\n")[0].includes("7.1.2"))
+    throw Error("Uventet medieverktøyversjon: " + tool);
   if (version.includes("--enable-nonfree"))
     throw Error("Kan ikke distribuere nonfree-build: " + tool);
   console.log(version.split("\n")[0]);
