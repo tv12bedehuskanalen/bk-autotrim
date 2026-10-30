@@ -32,7 +32,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
         id: media
         with:
           path: vendor
@@ -54,6 +54,11 @@ jobs:
       - if: runner.os == 'macOS' && steps.media.outputs.cache-hit != 'true'
         run: bash scripts/build-media.sh
       - run: node scripts/verify-media.cjs
+      - uses: actions/cache/save@v4
+        if: steps.media.outputs.cache-hit != 'true'
+        with:
+          path: vendor
+          key: ${{ steps.media.outputs.cache-primary-key }}
       - run: npm run test:media
       - run: npx electron-builder --publish never --${{ matrix.arch }}
         env:

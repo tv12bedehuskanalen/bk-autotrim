@@ -23,7 +23,7 @@ test(
       "-i",
       "sine=frequency=1000:sample_rate=48000:duration=3",
       "-vf",
-      "format=yuv422p10le",
+      "format=yuv422p10le,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=limited",
       "-af",
       "volume=if(lt(t\\,1.22)\\,0.1\\,1):eval=frame",
       "-c:v",
