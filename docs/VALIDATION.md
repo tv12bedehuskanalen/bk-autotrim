@@ -3,7 +3,7 @@
 Lokalt kontrollert på Apple Silicon:
 
 - 11 enhetstester for klippegrenser, filnavn, sikker levering/avbrudd og offentlige oppdateringer med kontrollsummer.
-- 4 integrasjonstester med de medfølgende, egenbygde medieverktøyene: nøyaktig antall bilder og bildegrenser, pikselformat, fargetagger, lydnivå, kopiert video, 48-bilders markører, og ugyldige PNG-overlays.
+- 5 integrasjonstester med de medfølgende, egenbygde medieverktøyene: nøyaktig antall bilder og bildegrenser, pikselformat, fargetagger, lydnivå, kopiert video, 48-bilders markører, ugyldige PNG-overlays og avvisning av ufullstendige lokale filer ved gjenoppretting.
 - Appvinduet åpnes med BK-design. Ett-bildes justering og avspillbar forhåndsvisning er testet mot det virkelige opptaket via appens egne knapper.
 - Pakket FFmpeg og FFprobe starter med tom PATH, og den pakkede PNG-logoen er identisk med originalfilen. PNG-dekoding og alfakanal fungerer i pakken.
 - Den virkelige logoen er 1920×1080 med synlig grafikk og transparent bakgrunn. Overlay legges ved 0,0 uten skalering.

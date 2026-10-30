@@ -128,7 +128,11 @@ ipcMain.handle("render", async (_, job) => {
     fs.rmSync(temp, { recursive: true, force: true });
     return { ok: true };
   } catch (e) {
-    throw Error(e.message + " Midlertidige filer: " + temp);
+    throw Error(
+      (e.name === "AbortError" ? "Jobben ble avbrutt." : e.message) +
+        " Midlertidige filer: " +
+        temp,
+    );
   } finally {
     controller = null;
   }
@@ -248,6 +252,7 @@ ipcMain.handle("recover", async () => {
   });
   if (picked.canceled) return;
   const local = picked.filePaths[0];
+  await media.validateRecovery(local);
   const destination = await dialog.showOpenDialog(win, {
     properties: ["openDirectory"],
   });

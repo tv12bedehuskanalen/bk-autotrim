@@ -264,3 +264,44 @@ test("reject opaque and invisible PNG overlays before export", async (t) => {
     );
   }
 });
+
+test("recovery rejects incomplete exports and benchmark files", async (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "bk-recovery-"));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const local = path.join(directory, "Program.mov");
+  await media.run("ffmpeg", [
+    "-v",
+    "error",
+    "-f",
+    "lavfi",
+    "-i",
+    "color=black:size=32x18:rate=50:duration=1",
+    "-f",
+    "lavfi",
+    "-i",
+    "sine=duration=1",
+    "-c:v",
+    "libx264",
+    "-c:a",
+    "pcm_s24le",
+    local,
+  ]);
+  await assert.rejects(media.validateRecovery(local), /Jobbinformasjon/);
+  const job = {
+    name: "Program",
+    start: 0,
+    end: 2,
+    clean: true,
+    branded: false,
+  };
+  fs.writeFileSync(path.join(directory, "job.json"), JSON.stringify(job));
+  await assert.rejects(media.validateRecovery(local), /ufullstendig/);
+  job.end = 1;
+  fs.writeFileSync(path.join(directory, "job.json"), JSON.stringify(job));
+  assert.equal((await media.validateRecovery(local)).duration, 1);
+  fs.copyFileSync(local, path.join(directory, "benchmark-Program.mov"));
+  await assert.rejects(
+    media.validateRecovery(path.join(directory, "benchmark-Program.mov")),
+    /ikke en ferdig/,
+  );
+});
