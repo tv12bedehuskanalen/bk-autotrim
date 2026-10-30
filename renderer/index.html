@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self'; media-src 'self' file:"
+    />
+    <title>BK Autotrim</title>
+    <link rel="stylesheet" href="theme.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <img src="../assets/symbol.svg" alt="BK" />
+      <h1>Autotrim</h1>
+      <button id="update">Oppdateringer</button>
+    </header>
+    <main>
+      <section>
+        <div class="row">
+          <button id="add" class="primary">Velg opptak</button
+          ><span id="file">Ingen fil valgt</span>
+        </div>
+        <p id="info"></p>
+      </section>
+      <section>
+        <div class="row">
+          <h2>Klipp</h2>
+          <span id="marker"></span>
+        </div>
+        <select id="markers" hidden aria-label="Mulige grønnmarkører"></select>
+        <div class="previews">
+          <div>
+            <img
+              src="../assets/preview.svg"
+              id="inImage"
+              alt="Forhåndsvisning av start"
+            /><label
+              >Inn (sekunder)<input
+                id="start"
+                type="number"
+                min="0"
+                step="0.02"
+                value="0"
+            /></label>
+            <div class="row">
+              <button id="inBack" aria-label="innpunkt: ett bilde tilbake">
+                −1 bilde</button
+              ><button id="inNext" aria-label="innpunkt: ett bilde frem">
+                +1 bilde</button
+              ><button id="inPreview">Vis bilde</button
+              ><button id="inPlay">Spill rundt klipp</button>
+            </div>
+          </div>
+          <div>
+            <img
+              src="../assets/preview.svg"
+              id="outImage"
+              alt="Forhåndsvisning av slutt"
+            /><label
+              >Ut (sekunder)<input
+                id="end"
+                type="number"
+                min="0"
+                step="0.02"
+                value="0"
+            /></label>
+            <div class="row">
+              <button id="outBack" aria-label="utpunkt: ett bilde tilbake">
+                −1 bilde</button
+              ><button id="outNext" aria-label="utpunkt: ett bilde frem">
+                +1 bilde</button
+              ><button id="outPreview">Vis bilde</button
+              ><button id="outPlay">Spill rundt klipp</button>
+            </div>
+          </div>
+        </div>
+        <p id="duration"></p>
+        <video id="player" controls hidden></video>
+      </section>
+      <section>
+        <h2>Eksport</h2>
+        <div class="row">
+          <button id="folder">Velg målmappe</button
+          ><span id="folderPath">Ingen mappe valgt</span
+          ><button id="open">Åpne mappe</button>
+        </div>
+        <label>Filnavn<input id="name" placeholder="Programnavn" /></label>
+        <div class="row">
+          <label class="check"
+            ><input id="branded" type="checkbox" checked />Med logo</label
+          ><label class="check"
+            ><input id="clean" type="checkbox" checked />Uten logo</label
+          ><button id="logo">Velg logo (PNG)</button
+          ><span id="logoPath">Ingen logo valgt</span>
+        </div>
+        <p id="outputs"></p>
+        <div class="row">
+          <button id="render" class="primary">Eksporter</button
+          ><button id="cancel">Avbryt</button
+          ><button id="recover">Kopier bevart eksport …</button>
+        </div>
+      </section>
+      <section aria-live="polite">
+        <strong id="status">Klar</strong
+        ><progress id="progress" max="1" value="0"></progress>
+        <p id="detail"></p>
+        <p id="error" role="alert"></p>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

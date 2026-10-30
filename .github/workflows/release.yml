@@ -1,0 +1,86 @@
+name: Build installers
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            arch: arm64
+            platform: darwin
+          - os: macos-15-intel
+            arch: x64
+            platform: darwin
+          - os: windows-latest
+            arch: x64
+            platform: win32
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - if: startsWith(github.ref, 'refs/tags/')
+        run: npm run verify:release
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - if: runner.os == 'macOS'
+        run: brew install nasm pkg-config
+      - if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            base-devel git curl tar nasm
+            mingw-w64-x86_64-gcc mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-nv-codec-headers mingw-w64-x86_64-zlib
+      - if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: bash scripts/build-media.sh
+      - if: runner.os == 'macOS'
+        run: bash scripts/build-media.sh
+      - run: node scripts/verify-media.cjs
+      - run: npm run test:media
+      - run: npx electron-builder --publish never --${{ matrix.arch }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - run: node scripts/verify-artifact.cjs ${{ matrix.platform }} ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BK-Autotrim-${{ matrix.platform }}-${{ matrix.arch }}
+          if-no-files-found: error
+          path: |
+            dist/*.dmg
+            dist/*.exe
+            vendor/media-sources.tar.gz
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-files
+      - name: Give source archives unique platform names
+        run: |
+          find release-files -name media-sources.tar.gz | while read file; do
+            directory=$(dirname "$(dirname "$file")")
+            mv "$file" "$(dirname "$file")/$(basename "$directory")-media-sources.tar.gz"
+          done
+      - name: Create release with all tested installers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --title "BK Autotrim $GITHUB_REF_NAME" --generate-notes $(find release-files -type f)
