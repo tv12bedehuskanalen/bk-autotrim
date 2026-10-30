@@ -71,7 +71,7 @@ node --check lib/media.cjs
 node --check lib/updates.cjs
 npm test
 # Explicit app paths; no NAS recordings, credentials, dependencies or neighbouring projects.
-git add -- .gitignore package.json README.md LICENSE THIRD_PARTY_NOTICES.md docs assets desktop lib renderer test scripts .github 'Publish to GitHub.command'
+git add -- .editorconfig .gitignore package.json README.md LICENSE THIRD_PARTY_NOTICES.md docs assets desktop lib renderer test scripts .github 'Publish to GitHub.command'
 if [ -f package-lock.json ]; then git add -- package-lock.json; fi
 echo 'Filer som publiseres:'
 git diff --cached --stat

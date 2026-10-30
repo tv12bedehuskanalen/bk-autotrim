@@ -10,7 +10,7 @@ Kontroller bildene, spill av rundt klippepunktene og juster ett bilde om gangen.
 
 Eksportene bruker to-pass EBU-normalisering til −23 LUFS med −1 dBTP tak og lineær gain når det er mulig. Lyd beholdes som 48 kHz / 24-bit stereo PCM. Ett stereospor kreves. Begge eksportene beholder oppløsning, bildefrekvens og fargetagger. Branded bruker 8-bit H.264, med maskinvareenkoder når den virker og programvarefallback. Uten logo forsøkes H.264-kopiering når innpunktet er et nøkkelbilde. Antall dekodede bilder, varighet og begge grensebilder kontrolleres mot kilden. Dersom kontrollen feiler eller innpunktet ligger mellom nøkkelbilder, omkodes videoen med kildepikselformatet.
 
-Først rendres det lokalt, så kopieres resultatet til en eksklusiv `.partial`-fil i målmappen før navnet endres. Eksisterende utdata avvises. Avbrudd og kopieringsfeil bevarer lokal eksport; feilmeldingen viser hvor filene finnes. «Kopier bevart eksport» prøver levering på nytt uten ny rendering. Ledig plass kontrolleres med et konservativt estimat, men ukjent NAS-kvote eller endret ledig plass kan fortsatt gi feil. Rendering og kopiering har separate fremdriftsvisninger og løpende estimat.
+Først rendres det lokalt, så kopieres resultatet til en eksklusiv `.partial`-fil i målmappen før navnet endres. Eksisterende utdata avvises. Avbrudd og kopieringsfeil bevarer lokal eksport; feilmeldingen viser hvor filene finnes. «Kopier bevart eksport» prøver levering på nytt uten ny rendering. Ledig plass kontrolleres med et konservativt estimat, men ukjent NAS-kvote eller endret ledig plass kan fortsatt gi feil. En kort prøveeksport beregner separate maskintilpassede estimater for begge jobber. Rendering og kopiering har separate fremdriftsvisninger og løpende estimat.
 
 ## Utvikling og installasjoner
 
@@ -29,4 +29,4 @@ Mac og Windows x64-installasjoner bygges på native GitHub-runnere. Manuell work
 
 ## Verifiseringsstatus
 
-Dette er en utviklingsversjon. Se utgivelsesrutinen for kontroller som må utføres på målmaskiner før produksjon. Automatisk installasjon av oppdateringer og nøyaktige forhåndsestimater for jobber som ikke har startet, er ikke implementert. Appen laster ned og tilbyr å åpne riktig offentlig installasjon ved oppdatering. Et helt program og målplattformene iTX/Vimeo OTT må fortsatt valideres av operatør.
+Dette er en utviklingsversjon. Se utgivelsesrutinen for kontroller som må utføres på målmaskiner før produksjon. Automatisk installasjon av oppdateringer, er ikke implementert. Appen laster ned og tilbyr å åpne riktig offentlig installasjon ved oppdatering. Et helt program og målplattformene iTX/Vimeo OTT må fortsatt valideres av operatør.

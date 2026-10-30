@@ -15,6 +15,7 @@ fetch_source() {
 fetch_source x264 https://github.com/mirror/x264/archive/31e19f92f00c7003fa115047ce50978bc98c3a0d.tar.gz
 fetch_source ffmpeg https://github.com/FFmpeg/FFmpeg/archive/refs/tags/n7.1.2.tar.gz
 JOBS="${BK_BUILD_JOBS:-4}"
+if [[ "$(uname -s)" == Darwin ]]; then export MACOSX_DEPLOYMENT_TARGET=13.0; fi
 cd "$WORK/x264"
 ./configure --prefix="$PREFIX" --enable-static --disable-cli --enable-pic --disable-opencl
 make -j"$JOBS"
@@ -31,11 +32,15 @@ SUFFIX=""; if [[ "${MSYSTEM:-}" == MINGW64 ]]; then SUFFIX=.exe; fi
 cp "ffmpeg$SUFFIX" "ffprobe$SUFFIX" "$ROOT/vendor/bin/"
 cp COPYING.GPLv2 COPYING.GPLv3 LICENSE.md "$ROOT/vendor/licenses/"
 if [[ "${MSYSTEM:-}" == MINGW64 ]]; then
+  cp /mingw64/share/licenses/ffnvcodec-headers/LICENSE "$ROOT/vendor/licenses/ffnvcodec-LICENSE"
+  mkdir -p "$WORK/ffnvcodec-headers"
+  cp -R /mingw64/include/ffnvcodec "$WORK/ffnvcodec-headers/"
+  cp /mingw64/lib/pkgconfig/ffnvcodec.pc "$WORK/ffnvcodec-headers/"
   cp /mingw64/share/licenses/zlib/LICENSE "$ROOT/vendor/licenses/zlib-LICENSE"
 fi
 cp "$WORK/x264/COPYING" "$ROOT/vendor/licenses/x264-COPYING"
 cp "$ROOT/scripts/build-media.sh" "$ROOT/vendor/licenses/build-media.sh"
 # Keep corresponding source next to each installer in releases.
-tar -czf "$ROOT/vendor/media-sources.tar.gz" -C "$WORK" --exclude='*.o' --exclude='*.a' --exclude='ffmpeg/ffmpeg' --exclude='ffmpeg/ffprobe' x264 ffmpeg
+tar -czf "$ROOT/vendor/media-sources.tar.gz" -C "$WORK" --exclude='*.o' --exclude='*.a' --exclude='ffmpeg/ffmpeg' --exclude='ffmpeg/ffprobe' x264 ffmpeg ${MSYSTEM:+ffnvcodec-headers}
 "$ROOT/vendor/bin/ffmpeg$SUFFIX" -version
 "$ROOT/vendor/bin/ffprobe$SUFFIX" -version

@@ -2,7 +2,8 @@ const $ = (id) => document.getElementById(id);
 let source = null,
   folder = "",
   logo = "",
-  busy = false;
+  busy = false,
+  cutConfirmed = false;
 function lock(value) {
   busy = value;
   for (const control of document.querySelectorAll("button,input,select")) {
@@ -54,6 +55,7 @@ $("add").onclick = () =>
     source = null;
     $("file").textContent = file;
     source = await bk.analyse(file);
+    cutConfirmed = source.markers.length === 1;
     $("start").value = source.start;
     $("end").value = source.end;
     $("start").step = $("end").step = 1 / source.fps;
@@ -87,6 +89,7 @@ $("add").onclick = () =>
 $("markers").onchange = () =>
   action(async () => {
     if ($("markers").value === "") return;
+    cutConfirmed = true;
     $("start").value =
       Math.round((Number($("markers").value) + 10) * source.fps) / source.fps;
     await preview("in");
@@ -115,9 +118,10 @@ for (const which of ["in", "out"]) {
     action(async () => {
       if (!source) return;
       $("status").textContent = "Lager avspillbar forhåndsvisning";
-      $("player").src = await bk.playback(source.file, cut(which));
+      const clip = await bk.playback(source.file, cut(which));
+      $("player").src = clip.url;
       $("player").hidden = false;
-      $("player").currentTime = 2;
+      $("player").currentTime = clip.offset;
       await $("player").play();
     });
   for (const delta of [-1, 1])
@@ -133,6 +137,7 @@ for (const which of ["in", "out"]) {
               Math.round(Number(field.value) * source.fps) + delta,
             ),
           ) / source.fps;
+        cutConfirmed = true;
         await preview(which);
         duration();
       });
@@ -141,6 +146,7 @@ for (const id of ["start", "end"])
   $(id).onchange = () =>
     action(async () => {
       if (!source) return;
+      cutConfirmed = true;
       $(id).value = Math.round(Number($(id).value) * source.fps) / source.fps;
       await preview(id === "start" ? "in" : "out");
       duration();
@@ -150,6 +156,8 @@ $("render").onclick = () =>
   action(async () => {
     if (!source) throw Error("Velg et opptak først.");
     if (!folder) throw Error("Velg målmappe.");
+    if (!cutConfirmed)
+      throw Error("Velg en markør eller sett innpunktet manuelt før eksport.");
     await bk.render({
       file: source.file,
       start: Number($("start").value),
@@ -174,6 +182,15 @@ $("update").onclick = () =>
   });
 bk.onProgress((p) => {
   $("status").textContent = p.stage;
+  if (p.queue) {
+    $("queue").replaceChildren(
+      ...p.queue.map((job) => {
+        const item = document.createElement("li");
+        item.textContent = `${job.filename} · ${job.status}${Number.isFinite(job.eta) && job.eta > 0 ? " · ca. " + Math.max(1, Math.ceil(job.eta / 60)) + " min" : ""}`;
+        return item;
+      }),
+    );
+  }
   $("progress").value = p.fraction || 0;
   $("detail").textContent = [
     p.filename,

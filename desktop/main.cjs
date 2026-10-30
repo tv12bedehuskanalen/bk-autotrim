@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
+const { createHash } = require("node:crypto");
 const { pathToFileURL } = require("node:url");
 const path = require("node:path"),
   fs = require("node:fs"),
@@ -168,6 +169,13 @@ ipcMain.handle("update", async () => {
       Readable.fromWeb(response.body),
       fs.createWriteStream(partial),
     );
+    const expected = await updates.checksum(result.tag, asset.name);
+    const hash = createHash("sha256");
+    for await (const chunk of fs.createReadStream(partial)) hash.update(chunk);
+    if (hash.digest("hex") !== expected)
+      throw Error(
+        "Kontrollsummen stemmer ikke. Installasjonen er slettet. Prøv nedlasting på nytt.",
+      );
     fs.renameSync(partial, target);
   } catch (error) {
     fs.rmSync(partial, { force: true });
@@ -230,7 +238,7 @@ ipcMain.handle("playback", async (_, file, seconds) => {
     "+faststart",
     target,
   ]);
-  return pathToFileURL(target).href;
+  return { url: pathToFileURL(target).href, offset: Math.min(2, seconds) };
 });
 
 ipcMain.handle("recover", async () => {

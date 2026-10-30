@@ -34,7 +34,8 @@
         "dmg"
       ],
       "category": "public.app-category.video",
-      "artifactName": "BK-Autotrim-${version}-darwin-${arch}.${ext}"
+      "artifactName": "BK-Autotrim-${version}-darwin-${arch}.${ext}",
+      "minimumSystemVersion": "13.0"
     },
     "win": {
       "target": [

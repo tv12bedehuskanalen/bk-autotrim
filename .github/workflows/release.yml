@@ -42,7 +42,7 @@ jobs:
           install: >-
             base-devel git curl tar nasm
             mingw-w64-x86_64-gcc mingw-w64-x86_64-pkgconf
-            mingw-w64-x86_64-nv-codec-headers mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-ffnvcodec-headers mingw-w64-x86_64-zlib
       - if: runner.os == 'Windows'
         shell: msys2 {0}
         run: bash scripts/build-media.sh
@@ -78,6 +78,9 @@ jobs:
             directory=$(dirname "$(dirname "$file")")
             mv "$file" "$(dirname "$file")/$(basename "$directory")-media-sources.tar.gz"
           done
+      - name: Generate checksums
+        run: |
+          find release-files -type f ! -name SHA256SUMS -exec sha256sum {} \; | sed 's|  .*/|  |' > release-files/SHA256SUMS
       - name: Create release with all tested installers
         env:
           GH_TOKEN: ${{ github.token }}

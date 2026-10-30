@@ -39,3 +39,24 @@ test("check uses public redirect without authentication", async () => {
   });
   assert.equal(r.available, true);
 });
+test("installer checksum must exist and be a valid SHA-256", async () => {
+  const { checksum } = require("../lib/updates.cjs");
+  const hash = "a".repeat(64);
+  assert.equal(
+    await checksum("v0.1.0", "app.exe", {
+      fetcher: async () => ({
+        ok: true,
+        text: async () => hash + "  app.exe\n",
+      }),
+    }),
+    hash,
+  );
+  await assert.rejects(
+    checksum("v0.1.0", "other.exe", {
+      fetcher: async () => ({
+        ok: true,
+        text: async () => hash + "  app.exe\n",
+      }),
+    }),
+  );
+});
